@@ -84,9 +84,8 @@ st.markdown("""
     .block-container {
         padding-top: 1rem;
         padding-bottom: 1rem;
-        max-width: 90%;
     }
-	
+            
     /* Reduces headings margins */
     h1 {
         margin-top: 0.5rem !important;
@@ -318,6 +317,7 @@ def main():
 		
     # Analyse when button clicked
     if search_button and company_input:
+        company_input = company_input.strip().title()
 	
         with st.spinner('Searching database...'):
             # Search for company in FAME database
