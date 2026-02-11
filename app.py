@@ -79,6 +79,29 @@ st.markdown("""
     hr {
         border-color: #2d3e50;
     }
+            
+            /* to reduce padding and spacing */
+    .block-container {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        max-width: 90%;
+    }
+	
+    /* Reduces headings margins */
+    h1 {
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+	
+    h2, h3 {
+        margin-top: 0.3rem !important;
+        margin-bottom: 0.3rem !important;
+    }
+	
+    /* Reduces the metric size */
+    [data-testid="stMetricValue"] {
+        font-size: 32px !important;
+    }
     /* Hides Streamlit branding */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
@@ -174,7 +197,7 @@ def create_export_data(company_name, ticker, credit_score, financials, fame_scor
 def plot_credit_score_gauge(score):
     # Create credit score gauge - Red if <50, Green if >=50
 	
-    fig, ax = plt.subplots(figsize=(8, 4), facecolor='none')
+    fig, ax = plt.subplots(figsize=(7, 2.5), facecolor='none')
     ax.set_xlim(0, 100)
     ax.set_ylim(0, 1)
     ax.axis('off')
@@ -240,7 +263,7 @@ def plot_credit_score_gauge(score):
 def plot_financial_ratios(financials):
     # Creates horizontal bar chart of financial ratios
 	
-    fig, ax = plt.subplots(figsize=(10, 6), facecolor='none')
+    fig, ax = plt.subplots(figsize=(10, 5), facecolor='none')
 	
     # Extracting data
     metrics = list(financials.keys())
@@ -362,7 +385,6 @@ def main():
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 use_container_width=True
             )
-        st.markdown("---")
         st.markdown(f"<h2 style='text-align: center; margin-bottom: 30px;'>Analysis Results for {match.company_name}</h2>", unsafe_allow_html=True)
 		
         # Row 1: Credit Score Gauge
