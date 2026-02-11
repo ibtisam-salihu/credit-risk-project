@@ -127,12 +127,12 @@ def calculate_credit_score(financials):
     
     # Weighted formula based on financial health indicators
     score = (
-        financials['Current Ratio'] * 10 +           # Liquidity weight
-        (2 - financials['Debt to Equity']) * 15 +    # Leverage weight (lower debt is better)
-        financials['Return on Assets'] * 3 +         # Profitability weight
-        financials['Profit Margin'] * 2 +            # Efficiency weight
-        financials['Quick Ratio'] * 8 +              # Short-term liquidity weight
-        financials['Interest Coverage'] * 4          # Debt servicing weight
+        financials['Current Ratio'] * 10 +        
+        (2 - financials['Debt to Equity']) * 15 +    
+        financials['Return on Assets'] * 3 +         
+        financials['Profit Margin'] * 2 +            
+        financials['Quick Ratio'] * 8 +              
+        financials['Interest Coverage'] * 4          
     )
 	
     # Ensure score is between 0-100
@@ -274,11 +274,11 @@ def plot_financial_ratios(financials):
 def main():
 
     # Load resolver (cached)
-    with st.spinner('Loading company database...'):
+    with st.spinner('Loading database...'):
         resolver = load_resolver()
 		
     # Header
-    st.markdown("<h1 style='text-align: center; font-size: 48px; margin-bottom: 10px;'>🏦 UK Company Credit Risk Scorer</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; font-size: 48px; margin-bottom: 10px;'>UK Credit Risk Scorer</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; font-size: 18px; color: #94a3b8; margin-bottom: 40px;'>Financial Analysis Powered by Yahoo Finance</p>", unsafe_allow_html=True)
 	
     # Search box
@@ -291,29 +291,29 @@ def main():
             key="search_input",
             label_visibility="collapsed"
         )
-        search_button = st.button("🔍 Analyze Company", use_container_width=True)
+        search_button = st.button("Analyse Company", use_container_width=True)
 		
     # Analyse when button clicked
     if search_button and company_input:
 	
-        with st.spinner('🔎 Searching FAME database...'):
+        with st.spinner('Searching database...'):
             # Search for company in FAME database
             match = resolver.resolve_one(company_input, min_similarity=70.0)
 			
             if not match:
                 # Company not found - show error and suggestions
-                st.error(f"❌ Company '{company_input}' not found in FAME database. Please check the spelling or try the ticker symbol.")
+                st.error(f"Company '{company_input}' not found in database. Please check the spelling or try the ticker.")
 				
                 # Show similar matches
                 matches = resolver.search(company_input, limit=5)
                 if matches:
-                    st.info("📋 Did you mean one of these?")
+                    st.info("Did you mean one of these?")
                     for m in matches:
                         st.write(f"• **{m.company_name}** (Ticker: {m.ticker_symbol}) - Similarity: {m.similarity:.0f}%")
                 return
 				
         # Company found
-        st.success(f"✅ Found: **{match.company_name}** (Ticker: {match.ticker_symbol})")
+        st.success(f"Success: **{match.company_name}** (Ticker: {match.ticker_symbol})")
         
         # Create progress indicators
         progress_bar = st.progress(0)
@@ -327,14 +327,14 @@ def main():
         financials = get_financial_ratios(yahoo_ticker) if yahoo_ticker else {}
 		
         # Step 2: Calculate credit score
-        status_text.text("💯 Calculating credit score...")
+        status_text.text("Calculating credit score...")
         progress_bar.progress(66)
 		
         credit_score = calculate_credit_score(financials)
 		
         # Complete
         progress_bar.progress(100)
-        status_text.text("✨ Analysis complete")
+        status_text.text("Results are ready")
 		
         # Clear progress indicators after 1 second
         import time
@@ -356,7 +356,7 @@ def main():
                 match.credit_score
             )
             st.download_button(
-                label="📥 Export Data to Excel",
+                label="Export Data to Excel?",
                 data=export_data,
                 file_name=f"{match.company_name.replace(' ', '_')}_Credit_Analysis.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
