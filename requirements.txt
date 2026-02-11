@@ -1,7 +1,7 @@
 streamlit
 pandas>=2.2.0
-yfinance
-transformers
-torch
-requests
+numpy 
 matplotlib
+yfinance 
+requests 
+openpyxl 
