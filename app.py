@@ -384,39 +384,39 @@ def main():
 st.markdown("")  # Small spacer
 info1, info2 = st.columns(2)
 with info1:
-        st.caption(f"**Yahoo Ticker:** {yahoo_ticker or 'N/A'}")
+    st.caption(f"**Yahoo Ticker:** {yahoo_ticker or 'N/A'}")
 with info2:
-        st.caption(f"**SIC Code:** {match.sic_code or 'N/A'}")
+    st.caption(f"**SIC Code:** {match.sic_code or 'N/A'}")
 
         # Company found
-        st.success(f"Success: **{match.company_name}** (Ticker: {match.ticker_symbol})")
+    st.success(f"Success: **{match.company_name}** (Ticker: {match.ticker_symbol})")
         
         # Create progress indicators
-        progress_bar = st.progress(0)
-        status_text = st.empty()
+    progress_bar = st.progress(0)
+    status_text = st.empty()
 		
         # Step 1: Fetch financial data
-        status_text.text("Calculating...")
-        progress_bar.progress(33)
+    status_text.text("Calculating...")
+    progress_bar.progress(33)
         
-        yahoo_ticker = match.yahoo_ticker
-        financials = get_financial_ratios(yahoo_ticker) if yahoo_ticker else {}
+    yahoo_ticker = match.yahoo_ticker
+    financials = get_financial_ratios(yahoo_ticker) if yahoo_ticker else {}
 		
         # Step 2: Calculate credit score
-        status_text.text("Calculating credit score...")
-        progress_bar.progress(66)
+    status_text.text("Calculating credit score...")
+    progress_bar.progress(66)
 		
-        credit_score = calculate_credit_score(financials)
+    credit_score = calculate_credit_score(financials)
 		
         # Complete
-        progress_bar.progress(100)
-        status_text.text("Results are ready")
+    progress_bar.progress(100)
+    status_text.text("Results are ready")
 		
         # Clear progress indicators after 1 second
-        import time
-        time.sleep(1)
-        progress_bar.empty()
-        status_text.empty()
+    import time
+    time.sleep(1)
+    progress_bar.empty()
+    status_text.empty()
 
                #store the session
 if 'show_results' not in st.session_state:
