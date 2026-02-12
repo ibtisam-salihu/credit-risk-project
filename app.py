@@ -300,11 +300,11 @@ def main():
         resolver = load_resolver()
 		
     # Header
-        st.markdown("<h1 style='text-align: center; font-size: 44px; margin: 6px;'>UK Credit Risk Scorer</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; font-size: 16px; color: #94a3b8; margin: 20px;'>Financial Analysis Powered by Yahoo Finance</p>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; font-size: 44px; margin: 6px;'>UK Credit Risk Scorer</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; font-size: 16px; color: #94a3b8; margin: 20px;'>Financial Analysis Powered by Yahoo Finance</p>", unsafe_allow_html=True)
 	
     # Search box
-        col1, col2, col3 = st.columns([1, 2, 1])
+    col1, col2, col3 = st.columns([1, 2, 1])
 	
     with col2:
         company_input = st.text_input(
@@ -331,8 +331,8 @@ def main():
                     matches = resolver.search(company_input, limit=5)
                     if matches:
                         st.info("Did you mean one of these?")
-                    for m in matches:
-                        st.write(f"• **{m.company_name}** (Ticker: {m.ticker_symbol}) - Similarity: {m.similarity:.0f}%")
+                        for m in matches:
+                            st.write(f"• **{m.company_name}** (Ticker: {m.ticker_symbol}) - Similarity: {m.similarity:.0f}%")
                     return
             
         # Company found
@@ -375,40 +375,23 @@ def main():
             with info2:
                 st.caption(f"**SIC Code:** {match.sic_code or 'N/A'}")
 
-
-        #center export button
-            col1, col2, col3 = st.columns([1, 1, 1])
-            with col2:
-                export_data = create_export_data(
-                    match.company_name,
-                    match.ticker_symbol,
-                    credit_score,
-                    financials,
-                    match.credit_score
-        )
-        st.download_button(
-            label="Export to Excel",
-            data=export_data,
-            file_name=f"{match.company_name.replace(' ', '_')}_Analysis.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True
-        )
+        
         #two coloums so layout is side by side 
-    left_col, right_col = st.columns([1, 1.2], gap="small")
+            left_col, right_col = st.columns([1, 1.2], gap="small")
 		
         #left sde: Credit Score Gauge
-    with left_col:
-        with st.container(border=True):
-            st.markdown("**Credit Score**")
-            fig_gauge = plot_credit_score_gauge(credit_score)
-            st.pyplot(fig_gauge, use_container_width=True)
-            plt.close()
+            with left_col:
+                with st.container(border=True):
+                    st.markdown("**Credit Score**")
+                    fig_gauge = plot_credit_score_gauge(credit_score)
+                    st.pyplot(fig_gauge, use_container_width=True)
+                    plt.close()
 				
                 #metircs 
-            m1, m2 = st.columns(2)
-            with m1:
-                st.metric("Calculated", f"{credit_score}/100")
-            with m2:
+                m1, m2 = st.columns(2)
+                with m1:
+                    st.metric("Calculated", f"{credit_score}/100")
+                with m2:
                     st.metric("FAME", f"{match.credit_score:.0f}" if match.credit_score else "N/A")
 					
         #right side : Financial Ratios
@@ -423,9 +406,10 @@ def main():
     if 'show_results' not in st.session_state:
         st.session_state.show_results = False       
 			
-    # Export button at the top
-    col_left, col_center, col_right = st.columns([1, 2, 1])
-    with col_center:
+
+        #center export button
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
         export_data = create_export_data(
             match.company_name,
             match.ticker_symbol,
@@ -461,13 +445,14 @@ def main():
     col1, col2, col3 = st.columns(3)
 		
     with col1:
-            st.metric("FAME Credit Score", f"{match.credit_score:.0f}" if match.credit_score else "N/A")
+        st.metric("FAME Credit Score", f"{match.credit_score:.0f}" if match.credit_score else "N/A")
 			
     with col2:
-            st.metric("Yahoo Ticker", yahoo_ticker or "N/A")
+        st.metric("Yahoo Ticker", yahoo_ticker or "N/A")
     with col3:
-            st.metric("Calculated Score", f"{credit_score}/100")
+        st.metric("Calculated Score", f"{credit_score}/100")
 			
 			
 if __name__ == "__main__":
+    
     main()
