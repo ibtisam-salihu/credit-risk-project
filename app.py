@@ -300,11 +300,11 @@ def main():
         resolver = load_resolver()
 		
     # Header
-    st.markdown("<h1 style='text-align: center; font-size: 44px; margin: 6px;'>UK Credit Risk Scorer</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; font-size: 16px; color: #94a3b8; margin: 20px;'>Financial Analysis Powered by Yahoo Finance</p>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; font-size: 44px; margin: 6px;'>UK Credit Risk Scorer</h1>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; font-size: 16px; color: #94a3b8; margin: 20px;'>Financial Analysis Powered by Yahoo Finance</p>", unsafe_allow_html=True)
 	
     # Search box
-    col1, col2, col3 = st.columns([1, 2, 1])
+        col1, col2, col3 = st.columns([1, 2, 1])
 	
     with col2:
         company_input = st.text_input(
@@ -316,130 +316,130 @@ def main():
         search_button = st.button("Analyse Company", use_container_width=True)
 		
     # Analyse when button clicked
-    if search_button and company_input:
-        company_input = company_input.strip()
+        if search_button and company_input:
+            company_input = company_input.strip()
 	
-        with st.spinner('Searching database...'):
+            with st.spinner('Searching database...'):
             # Search for company in FAME database
-            match = resolver.resolve_one(company_input, min_similarity=60.0)
+                match = resolver.resolve_one(company_input, min_similarity=60.0)
 			
-            if not match:
+                if not match:
                 # Company not found - show error and suggestions
-                st.error(f"Company '{company_input}' not found in database. Please check the spelling or try the ticker.")
+                    st.error(f"Company '{company_input}' not found in database. Please check the spelling or try the ticker.")
 				
                 # Show similar matches
-                matches = resolver.search(company_input, limit=5)
-                if matches:
-                    st.info("Did you mean one of these?")
+                    matches = resolver.search(company_input, limit=5)
+                    if matches:
+                        st.info("Did you mean one of these?")
                     for m in matches:
                         st.write(f"• **{m.company_name}** (Ticker: {m.ticker_symbol}) - Similarity: {m.similarity:.0f}%")
-                return
+                    return
+            
+        # Company found
+            st.success(f"Success: **{match.company_name}** (Ticker: {match.ticker_symbol})")
+        
+    # Create progress indicators
+            progress_bar = st.progress(0)
+            status_text = st.empty()
+		
+    # Step 1: Fetch financial data
+            status_text.text("Calculating...")
+            progress_bar.progress(33)
+        
+            yahoo_ticker = match.yahoo_ticker
+            financials = get_financial_ratios(yahoo_ticker) if yahoo_ticker else {}
+		
+    # Step 2: Calculate credit score
+            status_text.text("Calculating credit score...")
+            progress_bar.progress(66)
+		
+            credit_score = calculate_credit_score(financials)
+		
+    # Complete
+            progress_bar.progress(100)
+            status_text.text("Results are ready")
+		
+    # Clear progress indicators after 1 second
+            import time
+            time.sleep(1)
+            progress_bar.empty()
+            status_text.empty()
 	
-        st.markdown(f"<h2 style='text-align:center; margin: 15px 0 10px 0;'>{match.company_name}</h2>", unsafe_allow_html=True) 
+            st.markdown(f"<h2 style='text-align:center; margin: 15px 0 10px 0;'>{match.company_name}</h2>", unsafe_allow_html=True) 
 			
     #additonal indo
-    st.markdown("")  # Small spacer
-    info1, info2 = st.columns(2)
-    with info1:
-        st.caption(f"**Yahoo Ticker:** {yahoo_ticker or 'N/A'}")
-    with info2:
-        st.caption(f"**SIC Code:** {match.sic_code or 'N/A'}")
+            st.markdown("")  # Small spacer
+            info1, info2 = st.columns(2)
+            with info1:
+                st.caption(f"**Yahoo Ticker:** {yahoo_ticker or 'N/A'}")
+            with info2:
+                st.caption(f"**SIC Code:** {match.sic_code or 'N/A'}")
 
 
         #center export button
-        col1, col2, col3 = st.columns([1, 1, 1])
-        with col2:
-            export_data = create_export_data(
-                match.company_name,
-                match.ticker_symbol,
-                credit_score,
-                financials,
-                match.credit_score
-            )
-            st.download_button(
-                label="Export to Excel",
-                data=export_data,
-                file_name=f"{match.company_name.replace(' ', '_')}_Analysis.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True
-            )
+            col1, col2, col3 = st.columns([1, 1, 1])
+            with col2:
+                export_data = create_export_data(
+                    match.company_name,
+                    match.ticker_symbol,
+                    credit_score,
+                    financials,
+                    match.credit_score
+        )
+        st.download_button(
+            label="Export to Excel",
+            data=export_data,
+            file_name=f"{match.company_name.replace(' ', '_')}_Analysis.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True
+        )
         #two coloums so layout is side by side 
-        left_col, right_col = st.columns([1, 1.2], gap="small")
+    left_col, right_col = st.columns([1, 1.2], gap="small")
 		
         #left sde: Credit Score Gauge
-        with left_col:
-            with st.container(border=True):
-                st.markdown("**Credit Score**")
-                fig_gauge = plot_credit_score_gauge(credit_score)
-                st.pyplot(fig_gauge, use_container_width=True)
-                plt.close()
+    with left_col:
+        with st.container(border=True):
+            st.markdown("**Credit Score**")
+            fig_gauge = plot_credit_score_gauge(credit_score)
+            st.pyplot(fig_gauge, use_container_width=True)
+            plt.close()
 				
                 #metircs 
-                m1, m2 = st.columns(2)
-                with m1:
-                    st.metric("Calculated", f"{credit_score}/100")
-                with m2:
+            m1, m2 = st.columns(2)
+            with m1:
+                st.metric("Calculated", f"{credit_score}/100")
+            with m2:
                     st.metric("FAME", f"{match.credit_score:.0f}" if match.credit_score else "N/A")
 					
         #right side : Financial Ratios
-        with right_col:
-            with st.container(border=True):
-                st.markdown("**Financial Ratios**")
-                fig_ratios = plot_financial_ratios(financials)
-                st.pyplot(fig_ratios, use_container_width=True)
-                plt.close()
+    with right_col:
+        with st.container(border=True):
+            st.markdown("**Financial Ratios**")
+            fig_ratios = plot_financial_ratios(financials)
+            st.pyplot(fig_ratios, use_container_width=True)
+            plt.close()
 
                    #store the session
     if 'show_results' not in st.session_state:
         st.session_state.show_results = False       
-
-    # Company found
-    st.success(f"Success: **{match.company_name}** (Ticker: {match.ticker_symbol})")
-        
-    # Create progress indicators
-    progress_bar = st.progress(0)
-    status_text = st.empty()
-		
-    # Step 1: Fetch financial data
-    status_text.text("Calculating...")
-    progress_bar.progress(33)
-        
-    yahoo_ticker = match.yahoo_ticker
-    financials = get_financial_ratios(yahoo_ticker) if yahoo_ticker else {}
-		
-    # Step 2: Calculate credit score
-    status_text.text("Calculating credit score...")
-    progress_bar.progress(66)
-		
-    credit_score = calculate_credit_score(financials)
-		
-    # Complete
-    progress_bar.progress(100)
-    status_text.text("Results are ready")
-		
-    # Clear progress indicators after 1 second
-    import time
-    time.sleep(1)
-    progress_bar.empty()
-    status_text.empty()
 			
     # Export button at the top
     col_left, col_center, col_right = st.columns([1, 2, 1])
     with col_center:
         export_data = create_export_data(
-                match.company_name,
-                match.ticker_symbol,
-                credit_score,
-                financials,
-                match.credit_score
-            )
+            match.company_name,
+            match.ticker_symbol,
+            credit_score,
+            financials,
+            match.credit_score
+        )
         st.download_button(
-                label="Export Data to Excel?",
-                data=export_data,
-                file_name=f"{match.company_name.replace(' ', '_')}_Credit_Analysis.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True
-            )
+            label="Export Data to Excel?",
+            data=export_data,
+            file_name=f"{match.company_name.replace(' ', '_')}_Credit_Analysis.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True
+        )
     st.markdown(f"<h2 style='text-align: center; margin-bottom: 30px;'>Analysis Results for {match.company_name}</h2>", unsafe_allow_html=True)
 		
     # Row 1: Credit Score Gauge
