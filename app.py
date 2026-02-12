@@ -336,7 +336,16 @@ def main():
                 return
 	
         st.markdown(f"<h2 style='text-align:center; margin: 15px 0 10px 0;'>{match.company_name}</h2>", unsafe_allow_html=True) 
-		
+			
+    #additonal indo
+    st.markdown("")  # Small spacer
+    info1, info2 = st.columns(2)
+    with info1:
+        st.caption(f"**Yahoo Ticker:** {yahoo_ticker or 'N/A'}")
+    with info2:
+        st.caption(f"**SIC Code:** {match.sic_code or 'N/A'}")
+
+
         #center export button
         col1, col2, col3 = st.columns([1, 1, 1])
         with col2:
@@ -379,95 +388,84 @@ def main():
                 fig_ratios = plot_financial_ratios(financials)
                 st.pyplot(fig_ratios, use_container_width=True)
                 plt.close()
-			
-    #additonal indo
-st.markdown("")  # Small spacer
-info1, info2 = st.columns(2)
-with info1:
-    st.caption(f"**Yahoo Ticker:** {yahoo_ticker or 'N/A'}")
-with info2:
-    st.caption(f"**SIC Code:** {match.sic_code or 'N/A'}")
 
-        # Company found
+                   #store the session
+    if 'show_results' not in st.session_state:
+        st.session_state.show_results = False       
+
+    # Company found
     st.success(f"Success: **{match.company_name}** (Ticker: {match.ticker_symbol})")
         
-        # Create progress indicators
+    # Create progress indicators
     progress_bar = st.progress(0)
     status_text = st.empty()
 		
-        # Step 1: Fetch financial data
+    # Step 1: Fetch financial data
     status_text.text("Calculating...")
     progress_bar.progress(33)
         
     yahoo_ticker = match.yahoo_ticker
     financials = get_financial_ratios(yahoo_ticker) if yahoo_ticker else {}
 		
-        # Step 2: Calculate credit score
+    # Step 2: Calculate credit score
     status_text.text("Calculating credit score...")
     progress_bar.progress(66)
 		
     credit_score = calculate_credit_score(financials)
 		
-        # Complete
+    # Complete
     progress_bar.progress(100)
     status_text.text("Results are ready")
 		
-        # Clear progress indicators after 1 second
+    # Clear progress indicators after 1 second
     import time
     time.sleep(1)
     progress_bar.empty()
     status_text.empty()
-
-               #store the session
-if 'show_results' not in st.session_state:
-        st.session_state.show_results = False
 			
-        # Display results
-st.markdown("---")
-		
-        # Export button at the top
-col_left, col_center, col_right = st.columns([1, 2, 1])
-with col_center:
-            export_data = create_export_data(
+    # Export button at the top
+    col_left, col_center, col_right = st.columns([1, 2, 1])
+    with col_center:
+        export_data = create_export_data(
                 match.company_name,
                 match.ticker_symbol,
                 credit_score,
                 financials,
                 match.credit_score
             )
-            st.download_button(
+        st.download_button(
                 label="Export Data to Excel?",
                 data=export_data,
                 file_name=f"{match.company_name.replace(' ', '_')}_Credit_Analysis.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 use_container_width=True
             )
-st.markdown(f"<h2 style='text-align: center; margin-bottom: 30px;'>Analysis Results for {match.company_name}</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='text-align: center; margin-bottom: 30px;'>Analysis Results for {match.company_name}</h2>", unsafe_allow_html=True)
 		
-        # Row 1: Credit Score Gauge
-st.markdown("<h3 style='color: white;'>Credit Score</h3>", unsafe_allow_html=True)
-fig_gauge = plot_credit_score_gauge(credit_score)
-st.pyplot(fig_gauge)
-plt.close()
+    # Row 1: Credit Score Gauge
+    st.markdown("<h3 style='color: white;'>Credit Score</h3>", unsafe_allow_html=True)
+    fig_gauge = plot_credit_score_gauge(credit_score)
+    st.pyplot(fig_gauge)
+    plt.close()
 		
-st.markdown("---")
+    st.markdown("---")
 		
-        # Row 2: Financial Ratios
-st.markdown("<h3 style='color: white;'>Financial Ratios</h3>", unsafe_allow_html=True)
-fig_ratios = plot_financial_ratios(financials)
-st.pyplot(fig_ratios)
-plt.close()
+    # Row 2: Financial Ratios
+    st.markdown("<h3 style='color: white;'>Financial Ratios</h3>", unsafe_allow_html=True)
+    fig_ratios = plot_financial_ratios(financials)
+    st.pyplot(fig_ratios)
+    plt.close()
 		
-        # Additional Info
-st.markdown("---")
-col1, col2, col3 = st.columns(3)
+    # additional info
+    st.markdown("---")
+    col1, col2, col3 = st.columns(3)
 		
-with col1:
+    with col1:
             st.metric("FAME Credit Score", f"{match.credit_score:.0f}" if match.credit_score else "N/A")
 			
-with col2:
+    with col2:
             st.metric("Yahoo Ticker", yahoo_ticker or "N/A")
-with col3:
+    with col3:
             st.metric("Calculated Score", f"{credit_score}/100")
 			
 			
