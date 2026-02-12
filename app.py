@@ -321,7 +321,7 @@ def main():
 	
         with st.spinner('Searching database...'):
             # Search for company in FAME database
-            match = resolver.resolve_one(company_input, min_similarity=70.0)
+            match = resolver.resolve_one(company_input, min_similarity=55.0)
 			
             if not match:
                 # Company not found - show error and suggestions
