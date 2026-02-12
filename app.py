@@ -388,11 +388,11 @@ def main():
                     plt.close()
 				
                 #metircs 
-                m1, m2 = st.columns(2)
-                with m1:
-                    st.metric("Calculated", f"{credit_score}/100")
-                with m2:
-                    st.metric("FAME", f"{match.credit_score:.0f}" if match.credit_score else "N/A")
+            m1, m2 = st.columns(2)
+            with m1:
+                st.metric("Calculated", f"{credit_score}/100")
+            with m2:
+                st.metric("FAME", f"{match.credit_score:.0f}" if match.credit_score else "N/A")
 					
         #right side : Financial Ratios
             with right_col:
@@ -408,22 +408,22 @@ def main():
                     
 
                 #center export button
-                col1, col2, col3 = st.columns([1, 1, 1])
-                with col2:
-                    export_data = create_export_data(
-                        match.company_name,
-                        match.ticker_symbol,
-                        credit_score,
-                        financials,
-                        match.credit_score
-                    )
-                    st.download_button(
-                        label="Export Data to Excel?",
-                        data=export_data,
-                        file_name=f"{match.company_name.replace(' ', '_')}_Credit_Analysis.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        use_container_width=True
-                    )
+            col1, col2, col3 = st.columns([1, 1, 1])
+            with col2:
+                export_data = create_export_data(
+                    match.company_name,
+                    match.ticker_symbol,
+                    credit_score,
+                    financials,
+                    match.credit_score
+                )
+                st.download_button(
+                    label="Export Data to Excel?",
+                    data=export_data,
+                    file_name=f"{match.company_name.replace(' ', '_')}_Credit_Analysis.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True
+                )
 
 if __name__ == "__main__":
     
