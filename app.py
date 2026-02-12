@@ -395,12 +395,12 @@ def main():
                     st.metric("FAME", f"{match.credit_score:.0f}" if match.credit_score else "N/A")
 					
         #right side : Financial Ratios
-    with right_col:
-        with st.container(border=True):
-            st.markdown("**Financial Ratios**")
-            fig_ratios = plot_financial_ratios(financials)
-            st.pyplot(fig_ratios, use_container_width=True)
-            plt.close()
+            with right_col:
+                with st.container(border=True):
+                    st.markdown("**Financial Ratios**")
+                    fig_ratios = plot_financial_ratios(financials)
+                    st.pyplot(fig_ratios, use_container_width=True)
+                    plt.close()
 
                    #store the session
     if 'show_results' not in st.session_state:
@@ -424,35 +424,7 @@ def main():
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             use_container_width=True
         )
-    st.markdown(f"<h2 style='text-align: center; margin-bottom: 30px;'>Analysis Results for {match.company_name}</h2>", unsafe_allow_html=True)
-		
-    # Row 1: Credit Score Gauge
-    st.markdown("<h3 style='color: white;'>Credit Score</h3>", unsafe_allow_html=True)
-    fig_gauge = plot_credit_score_gauge(credit_score)
-    st.pyplot(fig_gauge)
-    plt.close()
-		
-    st.markdown("---")
-		
-    # Row 2: Financial Ratios
-    st.markdown("<h3 style='color: white;'>Financial Ratios</h3>", unsafe_allow_html=True)
-    fig_ratios = plot_financial_ratios(financials)
-    st.pyplot(fig_ratios)
-    plt.close()
-		
-    # additional info
-    st.markdown("---")
-    col1, col2, col3 = st.columns(3)
-		
-    with col1:
-        st.metric("FAME Credit Score", f"{match.credit_score:.0f}" if match.credit_score else "N/A")
-			
-    with col2:
-        st.metric("Yahoo Ticker", yahoo_ticker or "N/A")
-    with col3:
-        st.metric("Calculated Score", f"{credit_score}/100")
-			
-			
+        
 if __name__ == "__main__":
     
     main()
