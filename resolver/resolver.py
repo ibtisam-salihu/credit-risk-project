@@ -105,12 +105,11 @@ class CompanyResolver:
         
         # so that lower case search works too 
         query_upper = query.upper()
-        query_lower = query_lower()
             
         # Try exact ticker match first
         exact = self.df[self.df["Ticker symbol"] == query.upper()]
         if len(exact) > 0:
-            return [self._row_to_match(exact.iloc[0], similarity=95.0)]
+            return [self._row_to_match(exact.iloc[0], similarity=100.0)]
             
         # Fuzzy search on company name and ticker
         results = process.extract(query, self.search_keys, scorer=fuzz.WRatio, limit=limit, score_cutoff=50)
@@ -122,7 +121,7 @@ class CompanyResolver:
         
         return matches
 
-    def resolve_one(self, query: str, min_similarity: float = 55.0) -> Optional[CompanyMatch]:
+    def resolve_one(self, query: str, min_similarity: float = 60.0) -> Optional[CompanyMatch]:
 
         results = self.search(query, limit=1)
         if not results:
