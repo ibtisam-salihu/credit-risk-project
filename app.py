@@ -403,28 +403,28 @@ def main():
                     plt.close()
 
                    #store the session
-    if 'show_results' not in st.session_state:
-        st.session_state.show_results = False       
-			
+            if 'show_results' not in st.session_state:
+                st.session_state.show_results = False       
+                    
 
-        #center export button
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col2:
-        export_data = create_export_data(
-            match.company_name,
-            match.ticker_symbol,
-            credit_score,
-            financials,
-            match.credit_score
-        )
-        st.download_button(
-            label="Export Data to Excel?",
-            data=export_data,
-            file_name=f"{match.company_name.replace(' ', '_')}_Credit_Analysis.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True
-        )
-        
+                #center export button
+                col1, col2, col3 = st.columns([1, 1, 1])
+                with col2:
+                    export_data = create_export_data(
+                        match.company_name,
+                        match.ticker_symbol,
+                        credit_score,
+                        financials,
+                        match.credit_score
+                    )
+                    st.download_button(
+                        label="Export Data to Excel?",
+                        data=export_data,
+                        file_name=f"{match.company_name.replace(' ', '_')}_Credit_Analysis.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        use_container_width=True
+                    )
+
 if __name__ == "__main__":
     
     main()
