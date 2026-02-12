@@ -196,7 +196,7 @@ def create_export_data(company_name, ticker, credit_score, financials, fame_scor
 def plot_credit_score_gauge(score):
     # Create credit score gauge - Red if <50, Green if >=50
 	
-    fig, ax = plt.subplots(figsize=(7, 2.5), facecolor='none')
+    fig, ax = plt.subplots(figsize=(4, 2), facecolor='none')
     ax.set_xlim(0, 100)
     ax.set_ylim(0, 1)
     ax.axis('off')
@@ -262,7 +262,7 @@ def plot_credit_score_gauge(score):
 def plot_financial_ratios(financials):
     # Creates horizontal bar chart of financial ratios
 	
-    fig, ax = plt.subplots(figsize=(10, 5), facecolor='none')
+    fig, ax = plt.subplots(figsize=(6, 3.5), facecolor='none')
 	
     # Extracting data
     metrics = list(financials.keys())
@@ -295,13 +295,13 @@ def plot_financial_ratios(financials):
 	
 def main():
 
-    # Load resolver (cached)
+    # Load resolver
     with st.spinner('Loading database...'):
         resolver = load_resolver()
 		
     # Header
-    st.markdown("<h1 style='text-align: center; font-size: 48px; margin-bottom: 10px;'>UK Credit Risk Scorer</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; font-size: 18px; color: #94a3b8; margin-bottom: 40px;'>Financial Analysis Powered by Yahoo Finance</p>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; font-size: 44px; margin: 6px;'>UK Credit Risk Scorer</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; font-size: 16px; color: #94a3b8; margin: 20px;'>Financial Analysis Powered by Yahoo Finance</p>", unsafe_allow_html=True)
 	
     # Search box
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -317,7 +317,7 @@ def main():
 		
     # Analyse when button clicked
     if search_button and company_input:
-        company_input = company_input.strip().title()
+        company_input = company_input.strip()
 	
         with st.spinner('Searching database...'):
             # Search for company in FAME database
@@ -334,7 +334,84 @@ def main():
                     for m in matches:
                         st.write(f"• **{m.company_name}** (Ticker: {m.ticker_symbol}) - Similarity: {m.similarity:.0f}%")
                 return
+            
+            #store the session
+    if 'show_results' not in st.session_state:
+        st.session_state.show_results = False
+		
+    #store results 
+    st.session_state.results = {
+        "match": match,
+        "yahoo_ticker": yahoo_ticker,
+        "financials": financials,
+        "credit_score": credit_score,
+    }
+    st.session_state.show_results = True
+	
+if st.session_state.get('show_results', False) and 'results' in st.session_state:
+    payload = st.session_state.results
+    match = payload["match"]
+    yahoo_ticker = payload["yahoo_ticker"]
+    financials = payload["financials"]
+    credit_score = payload["credit_score"]
+	
+    #make header compact 
+    st.markdown(f"<h2 style='text-align:center; margin: 15px 0 10px 0;'>{match.company_name}</h2>", unsafe_allow_html=True)
+	
+    #export button centerd
+	
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        export_data = create_export_data(
+            match.company_name,
+            match.ticker_symbol,
+            credit_score,
+            financials,
+            match.credit_score
+        )
+        st.download_button(
+            label="Export to Excel",
+            data=export_data,
+            file_name=f"{match.company_name.replace(' ', '_')}_Analysis.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True
+        )
+		
+    # two coloums for side by side 
+    left_col, right_col = st.columns([1, 1.2], gap="small")
+	
+    #left shows : Credit Score Gauge + Metrics
+    with left_col:
+        with st.container(border=True):
+            st.markdown("**Credit Score**")
+            fig_gauge = plot_credit_score_gauge(credit_score)
+            st.pyplot(fig_gauge, use_container_width=True)
+            plt.close()
+			
+            # Metrics in 2 columns below gauge
+            m1, m2 = st.columns(2)
+            with m1:
+                st.metric("Calculated", f"{credit_score}/100")
+            with m2:
+                st.metric("FAME", f"{match.credit_score:.0f}" if match.credit_score else "N/A")
 				
+    #right shows: Financial Ratios Chart
+    with right_col:
+        with st.container(border=True):
+            st.markdown("**Financial Ratios (Yahoo Finance)**")
+            fig_ratios = plot_financial_ratios(financials)
+            st.pyplot(fig_ratios, use_container_width=True)
+            plt.close()
+			
+    #additonal indo
+	
+    st.markdown("")  # Small spacer
+    info1, info2 = st.columns(2)
+    with info1:
+        st.caption(f"**Yahoo Ticker:** {yahoo_ticker or 'N/A'}")
+    with info2:
+        st.caption(f"**SIC Code:** {match.sic_code or 'N/A'}")
+
         # Company found
         st.success(f"Success: **{match.company_name}** (Ticker: {match.ticker_symbol})")
         
